@@ -3,18 +3,38 @@
 A recreation of the classic 1983 platformer as an [Omarchy](https://omarchy.org)
 shell overlay plugin.
 
-**Status:** v0.1 — title screen only. The game engine (tilemap, runner physics,
-brick digging, guard AI, the 150 classic levels) is not built yet.
+**Status:** v0.2 — playable levels. Run, climb ladders, traverse ropes, collect
+all the gold to reveal the exit, climb out the top. **Not yet:** digging, guards,
+lives/death, score, the classic 150 levels.
+
+## Controls
+
+| Key | Action |
+|-----|--------|
+| `←` `→` / `A` `D` | run |
+| `↑` `↓` / `W` `S` | climb ladders / drop off ropes |
+| `Space` | start (title) · next level (after LEVEL CLEAR) |
+| `R` | restart the level |
+| `Esc` | back to the title · `Esc`/`Q` on the title closes the overlay |
 
 ## Layout
 
-| Path              | Purpose                                              |
-|-------------------|-----------------------------------------------------|
-| `manifest.json`   | Omarchy plugin manifest (`kind: overlay`)            |
-| `LodeRunner.qml`  | Overlay entry point — title screen                   |
-| `game/`           | Reserved for engine modules (`.js`)                  |
-| `levels/`         | Reserved for level data                              |
-| `assets/`         | Reserved for sprite sheets / sound                   |
+| Path                | Purpose                                                  |
+|---------------------|---------------------------------------------------------|
+| `manifest.json`     | Omarchy plugin manifest (`kind: overlay`)                |
+| `LodeRunner.qml`    | Overlay window + cabinet chrome + key routing + screen SM |
+| `TitleScreen.qml`   | Title screen (visual only)                               |
+| `Playfield.qml`     | Renders a level, runs the loop, feeds input to the engine |
+| `PixelSprite.qml`   | ASCII-bitmap sprite (name avoids `QtQuick.Sprite`)       |
+| `game/tiles.js`     | Tile codes + the level charset                           |
+| `game/level.js`     | `parse(text)` → structured level                         |
+| `game/engine.js`    | Pure rules: `createState(level)`, `tick(state, input)`   |
+| `game/levels.js`    | Ordered list of level files                              |
+| `levels/*.txt`      | ASCII levels — `#` brick `@` concrete `H` ladder `-` rope `$` gold `&` player `0` guard `S` exit |
+
+The engine (`game/*.js`) is plain JS with no QML dependency, so it runs headless.
+`scratchpad/enginetest.mjs` (in the session) scripts a full solve of each level
+as a regression check.
 
 ## Install (dev)
 
