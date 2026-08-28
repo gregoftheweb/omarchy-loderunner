@@ -18,7 +18,8 @@ var DIG_REFILL   = 150;  // ticks a dug hole stays open
 var DIG_WARN     = 45;   // ticks before refill that the brick starts reforming
 var DIG_POSE     = 8;    // ticks the dig animation shows
 var GUARD_SKIP   = 4;    // guards sit out 1 tick in this many (→ ~0.75x speed)
-var GUARD_INHOLE = 26;   // ticks a guard flails in a hole before climbing out
+var GUARD_INHOLE = 26;   // ticks a guard sits settled in a hole
+var GUARD_CLIMB  = 8;    // ... then this many ticks hauling itself back out
 var GUARD_REBORN = 12;   // ticks a dead guard waits before dropping back in
 var SPAWN_GRACE  = 48;   // ticks after (re)spawn a guard can't kill the runner
 
@@ -46,7 +47,7 @@ function createState(level) {
       spawnX: gs.x, spawnY: gs.y,
       face: 1, hdir: 0, vdir: 0,
       onLadder: false, onRope: false, falling: false,
-      inHole: false, holeClock: 0,
+      inHole: false, climbing: false, holeClock: 0, holeX: 0, holeY: 0,
       dead: false, rebornClock: 0,
       carrying: false, frame: 0
     });
@@ -105,6 +106,19 @@ function guardAt(s, tx, ty, skipId) {
   return null;
 }
 
+// A guard that has fully settled into a dug hole — not still dropping in,
+// not yet hauling itself out. Its head is firm footing: the runner can
+// run straight over the top of it.
+function guardSettledInHoleAt(s, tx, ty) {
+  for (var i = 0; i < s.guards.length; i++) {
+    var g = s.guards[i];
+    if (g.dead || !g.inHole || g.climbing) continue;
+    if ((g.px % SUB) !== 0 || (g.py % SUB) !== 0) continue;
+    if (g.holeX === tx && g.holeY === ty) return true;
+  }
+  return false;
+}
+
 // ---- shared physics --------------------------------------------------------
 // Advance one actor by one tick given a movement intent. `who` is "player" or
 // "guard" (guards are blocked by each other and can't leave a hole normally).
@@ -140,6 +154,8 @@ function physics(s, a, intent, who) {
   var footing  = grid && standable(below);
   // a guard also rests on the head of another guard
   if (who === "guard" && grid && !footing && guardAt(s, tx, ty + 1, a.id)) footing = true;
+  // the runner can run across a guard settled in a hole
+  if (who === "player" && grid && !footing && guardSettledInHoleAt(s, tx, ty + 1)) footing = true;
   var supported = footing || onLadder || onRope;
 
   a.onLadder = onLadder;
@@ -233,6 +249,7 @@ function killGuard(s, g) {
   g.dead = true;
   g.carrying = false;
   g.inHole = false;
+  g.climbing = false;
   g.rebornClock = GUARD_REBORN;
 }
 
@@ -247,7 +264,7 @@ function respawnGuard(s, g) {
   }
   g.px = col * SUB; g.py = row * SUB;
   g.hdir = g.vdir = 0;
-  g.dead = false; g.inHole = false; g.holeClock = 0;
+  g.dead = false; g.inHole = false; g.climbing = false; g.holeClock = 0;
 }
 
 function dropGold(s, x, y) {
@@ -324,16 +341,22 @@ function stepGuard(s, g) {
   var gx = Math.round(g.px / SUB), gy = Math.round(g.py / SUB);
   var aligned = (g.px % SUB) === 0 && (g.py % SUB) === 0;
 
-  // in a hole: flail, then hop out
+  // in a hole: sit settled, then haul out over GUARD_CLIMB ticks
   if (g.inHole) {
-    if (--g.holeClock <= 0) {
-      var outX = gx + g.face;
-      if (!solid(tileAt(s, outX, gy - 1)) && !solid(tileAt(s, outX, gy))) {
-        g.px = outX * SUB; g.py = (gy - 1) * SUB;
-      } else if (!solid(tileAt(s, gx, gy - 1))) {
-        g.py = (gy - 1) * SUB;
+    g.holeClock--;
+    if (g.holeClock > GUARD_CLIMB) return;        // settled — runnable-over
+
+    g.climbing = true;                            // clawing out — lethal again
+    var hy = g.holeY, hx = g.holeX;
+    if (!solid(tileAt(s, hx, hy - 1))) {
+      g.py -= 1;                                  // rise straight up out of the pit
+      if (g.py <= (hy - 1) * SUB) { g.py = (hy - 1) * SUB; g.inHole = false; g.climbing = false; }
+    } else {
+      var outX = hx + (g.face || 1);
+      if (!solid(tileAt(s, outX, hy)) && !solid(tileAt(s, outX, hy - 1))) {
+        g.px = outX * SUB; g.py = (hy - 1) * SUB;
       }
-      g.inHole = false;
+      g.inHole = false; g.climbing = false;
     }
     return;
   }
@@ -346,7 +369,10 @@ function stepGuard(s, g) {
     for (var i = 0; i < s.holes.length; i++) {
       if (s.holes[i].x === ngx && s.holes[i].y === ngy) {
         g.inHole = true;
-        g.holeClock = GUARD_INHOLE;
+        g.climbing = false;
+        g.holeClock = GUARD_INHOLE + GUARD_CLIMB;
+        g.holeX = ngx;
+        g.holeY = ngy;
         break;
       }
     }

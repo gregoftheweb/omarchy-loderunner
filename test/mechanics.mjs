@@ -140,5 +140,24 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
   check('guard carries the gold', g.carrying && !s.revealed, `carrying=${g.carrying} revealed=${s.revealed}`);
 }
 
+// 8. the runner can run across a guard settled in a hole, but not while
+//    it is climbing back out
+{
+  const s = mk([
+    '..............',
+    '.&.0..........',
+    '.####.........',
+    '.####.........'
+  ]);
+  Engine.tick(s, { digRight: true });          // hole at (2,2), guard walks in
+  run(s, {}, 8 * T8);
+  const g = s.guards[0];
+  check('guard is settled in the hole', g.inHole && !g.climbing, `inHole=${g.inHole} climbing=${g.climbing}`);
+  // walk right over the top — should cross without dying
+  run(s, { right: true }, 3 * T8);
+  check('runner crosses the trapped guard', s.status === 'playing' && ptile(s)[0] >= 3,
+        `status=${s.status} at ${ptile(s)}`);
+}
+
 console.log(fails ? `\n${fails} FAILURE(S)` : '\nall mechanics OK');
 process.exit(fails ? 1 : 0);

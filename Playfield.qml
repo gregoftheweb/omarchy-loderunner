@@ -113,8 +113,8 @@ Item {
     goldCells = state.gold.slice()
     guardList = state.guards.map(function (g) {
       return { x: g.px, y: g.py, face: g.face, frame: g.frame,
-               dead: g.dead, inHole: g.inHole, carrying: g.carrying,
-               falling: g.falling, onLadder: g.onLadder }
+               dead: g.dead, inHole: g.inHole, climbing: g.climbing,
+               carrying: g.carrying, falling: g.falling, onLadder: g.onLadder }
     })
     holeList = state.holes.map(function (h) { return { x: h.x, y: h.y, timer: h.timer } })
 
@@ -318,11 +318,14 @@ Item {
         height: board.u
         PixelSprite {
           anchors.horizontalCenter: parent.horizontalCenter
-          y: parent.height - height + (modelData.inHole ? board.u * 0.28 : 0)
+          y: parent.height - height
+             + (modelData.inHole && !modelData.climbing ? board.u * 0.28 : 0)
           cell: Math.max(1, board.u / 10)
           ink: pf.guardInk
           mirror: modelData.face < 0
-          bits: modelData.falling ? Sprites.GUARD.run[0]
+          bits: modelData.climbing ? Sprites.GUARD.run[Math.floor(pf.frame / 2) % 2]
+              : modelData.inHole ? Sprites.GUARD.idle[0]
+              : modelData.falling ? Sprites.GUARD.run[0]
               : modelData.onLadder ? Sprites.GUARD.run[Math.floor(modelData.frame / 3) % 2]
               : (modelData.x % 8 === 0 && modelData.y % 8 === 0 && modelData.frame === 0)
                 ? Sprites.GUARD.idle[0]
