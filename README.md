@@ -56,40 +56,28 @@ levels; the gold there needs a dig route the flood doesn't model. A real
 brute-force solver is a separate, much larger job (Lode Runner solving is
 PSPACE-hard).
 
-## Install (dev)
+## Install
 
-The plugin dir is the real checkout at
-`~/.config/omarchy/plugins/gonzo.loderunner`, with a convenience symlink at
-`~/Devplex/LodeRunner/loderunner` pointing to it. The real dir has to sit
-directly under `~/.config/omarchy/plugins/` — the shell's file watcher
-(`inotifywait -r`) does not follow a symlinked plugin dir, so a repo that only
-lives in `~/Devplex` never hot-reloads.
+Plugin id: **`com.columbiafoundry.loderunner`**. Clone (or symlink) this repo
+into the Omarchy plugin dir and enable it:
 
 ```bash
-# one-time, already done:
-#   git repo at ~/.config/omarchy/plugins/gonzo.loderunner
-#   ln -s ~/.config/omarchy/plugins/gonzo.loderunner ~/Devplex/LodeRunner/loderunner
-omarchy plugin enable gonzo.loderunner
+ln -s /path/to/loderunner ~/.config/omarchy/plugins/com.columbiafoundry.loderunner
+omarchy plugin enable com.columbiafoundry.loderunner
 ```
+
+This repo is developed at `~/Devplex/LodeRunner/loderunner` and symlinked into
+`~/.config/omarchy/plugins/`. Hot-reload of the QML across a symlinked plugin
+dir is unreliable — after editing, `omarchy restart shell` picks the change up
+cleanly (~3s).
 
 ## Run
 
 ```bash
-omarchy-shell shell toggle gonzo.loderunner
+omarchy-shell shell toggle com.columbiafoundry.loderunner
 ```
 
 Or the bound key: **SUPER + ALT + L** (defined in `~/.config/hypr/bindings.lua`).
-
-## Reload after editing
-
-Saving a `.qml` here triggers the shell's plugin watcher, but the reload
-unmounts the overlay — and a fast summon can still race the component cache.
-The reliable loop:
-
-```bash
-omarchy restart shell          # picks up the edit cleanly (~3s)
-omarchy-shell shell toggle gonzo.loderunner
-```
 
 ## The C64 way
 
@@ -102,3 +90,8 @@ RUN
 
 `8` = disk drive, `1` = load to the address baked into the file. On cassette it
 was just `LOAD` then `RUN`, or **SHIFT + RUN/STOP** to do both at once.
+
+## License
+
+MIT — see [LICENSE](LICENSE). An unofficial fan recreation; not affiliated with
+the rights holders of the original *Lode Runner*.
