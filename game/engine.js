@@ -20,6 +20,7 @@ var DIG_POSE     = 8;    // ticks the dig animation shows
 var GUARD_SKIP   = 4;    // guards sit out 1 tick in this many (→ ~0.75x speed)
 var GUARD_INHOLE = 26;   // ticks a guard flails in a hole before climbing out
 var GUARD_REBORN = 12;   // ticks a dead guard waits before dropping back in
+var SPAWN_GRACE  = 48;   // ticks after (re)spawn a guard can't kill the runner
 
 function k(x, y) { return x + "," + y; }
 function sign(n) { return n < 0 ? -1 : (n > 0 ? 1 : 0); }
@@ -74,7 +75,7 @@ function createState(level) {
       spawnX: level.playerStart.x, spawnY: level.playerStart.y,
       face: 1, hdir: 0, vdir: 0,
       moving: false, onRope: false, onLadder: false, falling: false,
-      digging: 0, frame: 0
+      digging: 0, frame: 0, grace: SPAWN_GRACE
     }
   };
 }
@@ -367,6 +368,7 @@ function tick(s, input) {
   s.tick++;
   var p = s.player;
   if (p.digging > 0) p.digging--;
+  if (p.grace > 0) p.grace--;
 
   var xa = (p.px % SUB) === 0;
   var ya = (p.py % SUB) === 0;
@@ -425,6 +427,7 @@ function finishPlayer(s) {
 function checkDeath(s) {
   if (s.status !== "playing") return;
   var p = s.player;
+  if (p.grace > 0) return;              // brief invulnerability after (re)spawn
   var pxT = Math.round(p.px / SUB), pyT = Math.round(p.py / SUB);
   for (var i = 0; i < s.guards.length; i++) {
     var g = s.guards[i];

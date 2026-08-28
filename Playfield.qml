@@ -49,6 +49,7 @@ Item {
   property bool onRope: false
   property bool falling: false
   property bool digging: false
+  property int grace: 0
   property var goldCells: []
   property var guardList: []
   property var holeList: []
@@ -106,6 +107,7 @@ Item {
     px = p.px; py = p.py; face = p.face; frame = p.frame
     onLadder = p.onLadder; onRope = p.onRope; falling = p.falling
     digging = p.digging > 0
+    grace = p.grace || 0
     goldLeft = state.goldLeft; goldCarried = state.goldCarried; goldTotal = state.goldTotal
     revealed = state.revealed
     goldCells = state.gold.slice()
@@ -339,7 +341,9 @@ Item {
     // ---- Runner ----
     PixelSprite {
       id: runner
-      visible: pf.dyingClock === 0 || (pf.dyingClock % 8 < 4)
+      visible: pf.dyingClock > 0 ? (pf.dyingClock % 8 < 4)
+             : pf.grace > 0      ? (pf.grace % 10 < 6)
+             : true
       cell: Math.max(1, board.u / 10)
       ink: pf.runnerInk
       mirror: pf.face < 0

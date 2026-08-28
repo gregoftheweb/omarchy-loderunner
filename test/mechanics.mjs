@@ -85,6 +85,19 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
   check('guard chases & catches', s.status === 'dead', `status=${s.status} guard=${gtile(s.guards[0])}`);
 }
 
+// 4b. spawn grace: a guard sitting on the runner can't kill for a moment
+{
+  const s = mk([
+    '..............',
+    '.0&...........',
+    '.############.'
+  ]);
+  run(s, {}, 20);
+  check('spawn grace holds', s.status === 'playing', `died after ${s.tick} ticks`);
+  run(s, {}, 60);
+  check('grace then lethal', s.status === 'dead', `status=${s.status}`);
+}
+
 // 5. guard falls into a hole and is held there
 {
   const s = mk([
