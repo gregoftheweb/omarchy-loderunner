@@ -5,8 +5,13 @@ shell overlay plugin.
 
 **Status:** v0.3 — run, climb ladders, cross ropes, dig holes to trap the
 guards, collect all the gold to reveal the exit, climb out the top. Five
-lives; a death resets the level. All 150 classic levels. **Not yet:** score,
-sound, an authentic guard-AI algorithm, a level-select menu.
+lives; a death resets the level. All 150 classic levels.
+
+A guard that falls into a hole coughs up any coin it was carrying onto the
+lip — dash across the top of the trapped guard and you can pinch it back.
+Guards always climb out, never drop into the same hole twice, and can grab
+the coin again on the way past. **Not yet:** score, sound, an authentic
+guard-AI algorithm, a level-select menu.
 
 ## Controls
 

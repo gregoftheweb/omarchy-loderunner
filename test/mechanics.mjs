@@ -107,7 +107,7 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
     '.###########.'
   ]);
   Engine.tick(s, { digRight: true });        // hole at (2,2)
-  run(s, {}, 20 * T8);
+  run(s, {}, 45);
   const g = s.guards[0];
   check('guard trapped in hole', g.inHole || g.dead, `inHole=${g.inHole} dead=${g.dead} at=${gtile(g)}`);
 }
@@ -125,6 +125,27 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
   const g = s.guards[0];
   check('guard survives its own respawn', s.guards.length === 1 && !g.inHole,
         `dead=${g.dead} at=${gtile(g)}`);
+}
+
+// 6b. a guard carrying a coin coughs it up when it drops into a hole, and
+//     remembers that hole once it has climbed back out
+{
+  const s = mk([
+    '............',
+    '..0.$..&....',
+    '..#######...',
+    '..#######...'
+  ]);
+  Engine.tick(s, { digLeft: true });          // pit at (6,2), in the guard's path
+  const g = s.guards[0];
+  let coughed = false, skip = null;
+  for (let i = 0; i < 140 && s.status === 'playing'; i++) {
+    Engine.tick(s, {});
+    if (g.inHole && !g.carrying && s.goldCarried === 0 && s.gold.length === 1) coughed = true;
+    if (g.skipHole) skip = g.skipHole;
+  }
+  check('guard coughs the coin into the pit', coughed, `carrying=${g.carrying} loose=${s.gold.length}`);
+  check('guard remembers the hole it climbed from', skip === '6,2', `skipHole=${skip}`);
 }
 
 // 7. guard picks up gold; exit stays shut until it's freed
@@ -150,7 +171,7 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
     '.####.........'
   ]);
   Engine.tick(s, { digRight: true });          // hole at (2,2), guard walks in
-  run(s, {}, 8 * T8);
+  run(s, {}, 26);
   const g = s.guards[0];
   check('guard is settled in the hole', g.inHole && !g.climbing, `inHole=${g.inHole} climbing=${g.climbing}`);
   // walk right over the top — should cross without dying

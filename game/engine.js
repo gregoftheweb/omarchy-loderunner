@@ -18,7 +18,7 @@ var DIG_REFILL   = 150;  // ticks a dug hole stays open
 var DIG_WARN     = 45;   // ticks before refill that the brick starts reforming
 var DIG_POSE     = 8;    // ticks the dig animation shows
 var GUARD_SKIP   = 4;    // guards sit out 1 tick in this many (→ ~0.75x speed)
-var GUARD_INHOLE = 26;   // ticks a guard sits settled in a hole
+var GUARD_INHOLE = 48;   // ticks a guard sits settled in a hole (~1s)
 var GUARD_CLIMB  = 8;    // ... then this many ticks hauling itself back out
 var GUARD_REBORN = 12;   // ticks a dead guard waits before dropping back in
 var SPAWN_GRACE  = 48;   // ticks after (re)spawn a guard can't kill the runner
@@ -48,6 +48,7 @@ function createState(level) {
       face: 1, hdir: 0, vdir: 0,
       onLadder: false, onRope: false, falling: false,
       inHole: false, climbing: false, holeClock: 0, holeX: 0, holeY: 0,
+      skipHole: null,
       dead: false, rebornClock: 0,
       carrying: false, frame: 0
     });
@@ -154,6 +155,8 @@ function physics(s, a, intent, who) {
   var footing  = grid && standable(below);
   // a guard also rests on the head of another guard
   if (who === "guard" && grid && !footing && guardAt(s, tx, ty + 1, a.id)) footing = true;
+  // a guard that just climbed out steps over that hole instead of falling back in
+  if (who === "guard" && grid && !footing && a.skipHole === k(tx, ty + 1)) footing = true;
   // the runner can run across a guard settled in a hole
   if (who === "player" && grid && !footing && guardSettledInHoleAt(s, tx, ty + 1)) footing = true;
   var supported = footing || onLadder || onRope;
@@ -250,6 +253,7 @@ function killGuard(s, g) {
   g.carrying = false;
   g.inHole = false;
   g.climbing = false;
+  g.skipHole = null;
   g.rebornClock = GUARD_REBORN;
 }
 
@@ -265,6 +269,15 @@ function respawnGuard(s, g) {
   g.px = col * SUB; g.py = row * SUB;
   g.hdir = g.vdir = 0;
   g.dead = false; g.inHole = false; g.climbing = false; g.holeClock = 0;
+  g.skipHole = null;
+}
+
+function placeGold(s, x, y) {
+  s.goldCarried = Math.max(0, s.goldCarried - 1);
+  if (s.goldSet[k(x, y)]) return;          // already a coin here — merge
+  s.goldSet[k(x, y)] = true;
+  s.gold.push({ x: x, y: y });
+  s.goldLeft++;
 }
 
 function dropGold(s, x, y) {
@@ -272,10 +285,22 @@ function dropGold(s, x, y) {
   var ty = y;
   while (ty < s.h - 1 && !standable(rawTile(s, x, ty + 1)) && rawTile(s, x, ty) === T.EMPTY) ty++;
   while (ty > 0 && solid(rawTile(s, x, ty))) ty--;
-  s.goldSet[k(x, ty)] = true;
-  s.gold.push({ x: x, y: ty });
-  s.goldLeft++;
-  s.goldCarried = Math.max(0, s.goldCarried - 1);
+  placeGold(s, x, ty);
+}
+
+// A guard coughs up the coin it was carrying when it drops into a hole. It
+// lands on the lip the runner would sprint across — a window to pinch it —
+// or in the pit itself if the lip is taken.
+function coughGold(s, g) {
+  if (!g.carrying) return;
+  var spots = [[g.holeX, g.holeY - 1], [g.holeX, g.holeY]];
+  for (var i = 0; i < spots.length; i++) {
+    var x = spots[i][0], y = spots[i][1];
+    if (y < 0 || solid(rawTile(s, x, y)) || s.goldSet[k(x, y)]) continue;
+    g.carrying = false;
+    placeGold(s, x, y);
+    return;
+  }
 }
 
 function guardIntent(s, g) {
@@ -341,6 +366,15 @@ function stepGuard(s, g) {
   var gx = Math.round(g.px / SUB), gy = Math.round(g.py / SUB);
   var aligned = (g.px % SUB) === 0 && (g.py % SUB) === 0;
 
+  // forget a hole this guard has already escaped once it is gone or well behind
+  if (g.skipHole) {
+    var sp = g.skipHole.split(",");
+    var hX = +sp[0], hY = +sp[1], live = false;
+    for (var hi = 0; hi < s.holes.length; hi++)
+      if (s.holes[hi].x === hX && s.holes[hi].y === hY) { live = true; break; }
+    if (!live || Math.abs(gx - hX) > 2 || Math.abs(gy - hY) > 2) g.skipHole = null;
+  }
+
   // in a hole: sit settled, then haul out over GUARD_CLIMB ticks
   if (g.inHole) {
     g.holeClock--;
@@ -350,13 +384,17 @@ function stepGuard(s, g) {
     var hy = g.holeY, hx = g.holeX;
     if (!solid(tileAt(s, hx, hy - 1))) {
       g.py -= 1;                                  // rise straight up out of the pit
-      if (g.py <= (hy - 1) * SUB) { g.py = (hy - 1) * SUB; g.inHole = false; g.climbing = false; }
+      if (g.py <= (hy - 1) * SUB) {
+        g.py = (hy - 1) * SUB; g.inHole = false; g.climbing = false;
+        g.skipHole = k(hx, hy);                   // won't drop into this one again
+      }
     } else {
       var outX = hx + (g.face || 1);
       if (!solid(tileAt(s, outX, hy)) && !solid(tileAt(s, outX, hy - 1))) {
         g.px = outX * SUB; g.py = (hy - 1) * SUB;
       }
       g.inHole = false; g.climbing = false;
+      g.skipHole = k(hx, hy);
     }
     return;
   }
@@ -368,11 +406,13 @@ function stepGuard(s, g) {
   if ((g.px % SUB) === 0 && (g.py % SUB) === 0) {
     for (var i = 0; i < s.holes.length; i++) {
       if (s.holes[i].x === ngx && s.holes[i].y === ngy) {
+        if (g.skipHole === k(ngx, ngy)) break;   // already climbed out of this one
         g.inHole = true;
         g.climbing = false;
         g.holeClock = GUARD_INHOLE + GUARD_CLIMB;
         g.holeX = ngx;
         g.holeY = ngy;
+        coughGold(s, g);                          // drop the coin for the runner to grab
         break;
       }
     }
