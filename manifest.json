@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "gonzo.loderunner",
+  "name": "Lode Runner",
+  "version": "0.1.0",
+  "author": "gonzo",
+  "description": "A recreation of the classic Lode Runner. v0.1: title screen only.",
+  "keepLoaded": true,
+  "kinds": ["overlay"],
+  "entryPoints": {
+    "overlay": "LodeRunner.qml"
+  }
+}
