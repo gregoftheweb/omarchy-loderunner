@@ -172,6 +172,7 @@ Item {
           levelIndex: root.levelIndex
           levelCount: root.levelCount
           onFinished: root.nextLevel()
+          onQuit: root.screen = "title"
         }
       }
     }
