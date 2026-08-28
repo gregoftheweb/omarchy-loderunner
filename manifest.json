@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "gonzo.loderunner",
+  "id": "com.columbiafoundry.loderunner",
   "name": "Lode Runner",
   "version": "0.3.0",
   "author": "gonzo",
