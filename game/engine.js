@@ -165,7 +165,7 @@ function settle(s) {
     }
   }
 
-  if (p.moving && !p.falling) p.frame = (p.frame + 1) & 7;
+  if (p.moving && !p.falling) p.frame = (p.frame + 1) & 1023;
 
   if (s.revealed && p.py <= 0) {
     p.py = 0;

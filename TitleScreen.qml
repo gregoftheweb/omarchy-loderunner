@@ -1,5 +1,6 @@
 // Title screen — purely visual. Key handling lives in LodeRunner.qml.
 import QtQuick
+import "game/sprites.js" as Sprites
 
 Item {
   id: title
@@ -130,23 +131,17 @@ Item {
         PixelSprite {
           cell: stage.u
           ink: title.runnerInk
-          x: 15 * stage.u
+          x: 14 * stage.u
           y: (stage.floorY - 20 - height / stage.u) * stage.u
-          bits: [
-            "..XXXX..", "..XXXX..", ".XXXXXX.", "X.XXXX.X",
-            "X.XXXX.X", "..XXXX..", ".XX..XX.", ".X....X.", "XX....XX"
-          ]
+          bits: Sprites.RUNNER.run[0]
         }
 
         PixelSprite {
           cell: stage.u
           ink: title.guardInk
-          x: 140 * stage.u
+          x: 138 * stage.u
           y: (stage.floorY - height / stage.u) * stage.u
-          bits: [
-            "..XXXX..", "..XXXX..", ".XXXXXX.", ".XXXXXX.",
-            "X.XXXX.X", "..XXXX..", ".XX..XX.", ".X....X.", "XX....XX"
-          ]
+          bits: Sprites.GUARD.idle[0]
         }
       }
 

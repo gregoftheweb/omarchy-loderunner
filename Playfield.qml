@@ -3,6 +3,7 @@
 import QtQuick
 import "game/engine.js" as Engine
 import "game/level.js" as LevelParser
+import "game/sprites.js" as Sprites
 
 Item {
   id: pf
@@ -35,8 +36,10 @@ Item {
   property int px: 0
   property int py: 0
   property int face: 1
+  property int frame: 0
   property bool onLadder: false
   property bool onRope: false
+  property bool falling: false
   property var goldCells: []
   property int goldLeft: 0
   property int goldTotal: 0
@@ -79,8 +82,8 @@ Item {
   function sync() {
     if (!state) return
     var p = state.player
-    px = p.px; py = p.py; face = p.face
-    onLadder = p.onLadder; onRope = p.onRope
+    px = p.px; py = p.py; face = p.face; frame = p.frame
+    onLadder = p.onLadder; onRope = p.onRope; falling = p.falling
     goldLeft = state.goldLeft; goldTotal = state.goldTotal
     revealed = state.revealed
     goldCells = state.gold.slice()
@@ -235,21 +238,15 @@ Item {
     // ---- Runner ----
     PixelSprite {
       id: runner
-      cell: Math.max(1, board.u / 8)
+      cell: Math.max(1, board.u / 10)
       ink: pf.runnerInk
       mirror: pf.face < 0
       x: Math.round(pf.px * board.sub) + (board.u - width) / 2
       y: Math.round(pf.py * board.sub) + (board.u - height)
-      bits: pf.onLadder ? climbBits : runBits
-
-      readonly property var runBits: [
-        "..XXXX..", "..XXXX..", ".XXXXXX.", "X.XXXX.X",
-        "X.XXXX.X", "..XXXX..", ".XX..XX.", ".X....X.", "XX....XX"
-      ]
-      readonly property var climbBits: [
-        "X.XXXX.X", "X.XXXX.X", ".XXXXXX.", "..XXXX..",
-        "..XXXX..", "..XXXX..", "..XXXX..", "..X..X..", "..X..X.."
-      ]
+      bits: pf.falling  ? Sprites.RUNNER.fall[0]
+          : pf.onLadder ? Sprites.RUNNER.climb[Math.floor(pf.frame / 3) % 2]
+          : pf.onRope   ? Sprites.RUNNER.climb[Math.floor(pf.frame / 3) % 2]
+          :               Sprites.RUNNER.run[Math.floor(pf.frame / 2) % 4]
     }
   }
 

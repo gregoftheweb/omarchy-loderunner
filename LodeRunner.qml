@@ -108,13 +108,23 @@ Item {
       border.width: 2
       border.color: "#243149"
 
-      MouseArea { anchors.fill: parent; onClicked: {} }
+      MouseArea { anchors.fill: parent; onPressed: keyCatcher.forceActiveFocus() }
 
       Item {
         id: keyCatcher
         anchors.fill: parent
         focus: true
         Keys.priority: Keys.BeforeItem
+
+        // The overlay can lose keyboard focus (a notification, the compositor,
+        // wtype's virtual keyboard). Grab it straight back while we're open.
+        onActiveFocusChanged: if (!activeFocus && root.opened) Qt.callLater(forceActiveFocus)
+        Component.onCompleted: forceActiveFocus()
+
+        Connections {
+          target: panel
+          function onVisibleChanged() { if (panel.visible) Qt.callLater(keyCatcher.forceActiveFocus) }
+        }
 
         Keys.onPressed: function (event) {
           if (root.screen === "title") {
