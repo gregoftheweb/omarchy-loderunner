@@ -444,9 +444,10 @@ function tick(s, input) {
   var here  = grid ? tileAt(s, tx, ty) : T.EMPTY;
   var footing = grid && standable(tileAt(s, tx, ty + 1));
 
-  // dig — only when aligned, standing on something, not on a ladder/rope
-  if ((input.digLeft || input.digRight) && xa && ya && footing
-      && here !== T.LADDER && here !== T.ROPE) {
+  // dig — when aligned and braced: on firm footing OR holding a ladder (so
+  // you can carve the brick beside a ladder), but never while on a rope
+  if ((input.digLeft || input.digRight) && xa && ya
+      && (footing || here === T.LADDER) && here !== T.ROPE) {
     var dx = input.digLeft ? -1 : 1;
     if (tryDig(s, tx + dx, ty + 1, tx + dx, ty)) {
       p.face = dx;

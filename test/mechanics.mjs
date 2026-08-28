@@ -42,6 +42,22 @@ const gtile = (g) => [Math.round(g.px / SUB), Math.round(g.py / SUB)];
   check('hole refills', s.tiles[2][2] === T.BRICK && s.holes.length === 0);
 }
 
+// 1b. dig the brick beside a ladder while holding the ladder
+{
+  const s = mk([
+    '........',
+    '.&H.....',
+    '.#H#....',
+    '.#H#....',
+    '.####...'
+  ]);
+  run(s, { right: true }, 8);                 // step onto the ladder at (2,1)
+  check('on the ladder', ptile(s)[0] === 2 && ptile(s)[1] === 1, `at ${ptile(s)}`);
+  Engine.tick(s, { digRight: true });
+  check('dig beside a ladder', s.tiles[2][3] === T.EMPTY && s.holes.length === 1,
+        `tile=${s.tiles[2][3]} holes=${s.holes.length}`);
+}
+
 // 2. dig, walk in, get crushed on refill
 {
   const s = mk([

@@ -104,9 +104,9 @@ Item {
       width: Math.min(940, parent.width - 96)
       height: Math.min(width * 0.64, parent.height - 96)
       radius: 12
-      color: "#05070d"
+      color: "#000000"
       border.width: 2
-      border.color: "#243149"
+      border.color: "#2e2c9b"
 
       MouseArea { anchors.fill: parent; onPressed: keyCatcher.forceActiveFocus() }
 

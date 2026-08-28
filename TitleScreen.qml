@@ -8,15 +8,16 @@ Item {
   property string monoFont: "monospace"
   property bool active: true          // drives the blinking prompt
 
-  readonly property color brickRed:   "#c8523c"
-  readonly property color brickDark:  "#5f231a"
-  readonly property color gold:       "#f4c542"
-  readonly property color goldDark:   "#8a6410"
-  readonly property color runnerInk:  "#f2f0e6"
-  readonly property color guardInk:   "#ff5db1"
-  readonly property color ladderInk:  "#6de1d2"
-  readonly property color titleInk:   "#f4c542"
-  readonly property color titleShade: "#7a4a12"
+  // Commodore 64 palette (Colodore)
+  readonly property color brickRed:   "#813338"
+  readonly property color brickDark:  "#553800"
+  readonly property color gold:       "#edf171"
+  readonly property color goldDark:   "#8e5029"
+  readonly property color runnerInk:  "#ffffff"
+  readonly property color guardInk:   "#c46c71"
+  readonly property color ladderInk:  "#75cec8"
+  readonly property color titleInk:   "#edf171"
+  readonly property color titleShade: "#8e5029"
 
   Column {
     anchors.fill: parent
@@ -162,14 +163,14 @@ Item {
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Original design by Doug Smith · 1983"
-        color: "#8892a6"
+        color: "#7b7b7b"
         font.family: title.monoFont
         font.pixelSize: title.height * 0.03
       }
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
         text: "Recreation — gonzo · v" + ((title.manifest && title.manifest.version) || "0.3.0")
-        color: "#8892a6"
+        color: "#7b7b7b"
         font.family: title.monoFont
         font.pixelSize: title.height * 0.03
       }
@@ -195,7 +196,7 @@ Item {
     Text {
       anchors.horizontalCenter: parent.horizontalCenter
       text: "Esc / Q to exit"
-      color: "#5b6478"
+      color: "#7b7b7b"
       font.family: title.monoFont
       font.pixelSize: title.height * 0.026
     }

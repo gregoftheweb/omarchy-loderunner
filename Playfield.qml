@@ -20,18 +20,19 @@ Item {
 
   readonly property int subPerTile: 8
 
-  readonly property color bg:        "#05070d"
-  readonly property color brick:     "#c8523c"
-  readonly property color brickDark: "#5f231a"
-  readonly property color solid:     "#7d8798"
-  readonly property color solidDark: "#4b5361"
-  readonly property color ladderInk: "#6de1d2"
-  readonly property color ropeInk:   "#d9a441"
-  readonly property color goldInk:   "#f4c542"
-  readonly property color goldDark:  "#8a6410"
-  readonly property color runnerInk: "#f2f0e6"
-  readonly property color guardInk:  "#ff5db1"
-  readonly property color exitInk:   "#8affc8"
+  // Commodore 64 palette (Colodore)
+  readonly property color bg:        "#000000"   // black
+  readonly property color brick:     "#813338"   // red
+  readonly property color brickDark: "#553800"   // brown mortar
+  readonly property color solid:     "#7b7b7b"   // grey
+  readonly property color solidDark: "#4a4a4a"   // dark grey
+  readonly property color ladderInk: "#75cec8"   // cyan
+  readonly property color ropeInk:   "#b2b2b2"   // light grey
+  readonly property color goldInk:   "#edf171"   // yellow
+  readonly property color goldDark:  "#8e5029"   // orange
+  readonly property color runnerInk: "#ffffff"   // white
+  readonly property color guardInk:  "#c46c71"   // light red
+  readonly property color exitInk:   "#a9ff9f"   // light green
 
   // --- run state ---
   property var state: null
@@ -200,7 +201,7 @@ Item {
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
       text: "LEVEL " + (pf.levelIndex + 1) + " / " + pf.levelCount
-      color: "#8892a6"
+      color: "#7b7b7b"
       font.family: pf.monoFont
       font.pixelSize: hud.height * 0.4
     }
@@ -370,7 +371,7 @@ Item {
     Text {
       anchors.centerIn: parent
       text: "←/→ run   ↑/↓ ladders   Z/X dig   R restart   Esc back"
-      color: "#5b6478"
+      color: "#7b7b7b"
       font.family: pf.monoFont
       font.pixelSize: foot.height * 0.42
     }
@@ -380,7 +381,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     visible: pf.won || pf.gameOver
-    color: "#cc05070d"
+    color: "#cc000000"
     Column {
       anchors.centerIn: parent
       spacing: parent.height * 0.03
