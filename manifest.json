@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "id": "gonzo.loderunner",
   "name": "Lode Runner",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "gonzo",
-  "description": "A recreation of the classic Lode Runner. v0.2: playable levels — run, climb, ropes, collect, exit.",
+  "description": "A recreation of the classic Lode Runner — run, climb, dig, dodge the guards, collect the gold, climb out. All 150 classic levels.",
   "keepLoaded": true,
   "kinds": ["overlay"],
   "entryPoints": {

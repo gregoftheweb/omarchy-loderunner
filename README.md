@@ -3,9 +3,10 @@
 A recreation of the classic 1983 platformer as an [Omarchy](https://omarchy.org)
 shell overlay plugin.
 
-**Status:** v0.2 — playable levels. Run, climb ladders, traverse ropes, collect
-all the gold to reveal the exit, climb out the top. **Not yet:** digging, guards,
-lives/death, score, the classic 150 levels.
+**Status:** v0.3 — run, climb ladders, cross ropes, dig holes to trap the
+guards, collect all the gold to reveal the exit, climb out the top. Five
+lives; a death resets the level. All 150 classic levels. **Not yet:** score,
+sound, an authentic guard-AI algorithm, a level-select menu.
 
 ## Controls
 
@@ -13,7 +14,8 @@ lives/death, score, the classic 150 levels.
 |-----|--------|
 | `←` `→` / `A` `D` | run |
 | `↑` `↓` / `W` `S` | climb ladders / drop off ropes |
-| `Space` | start (title) · next level (after LEVEL CLEAR) |
+| `Z` `X` | dig left / right |
+| `Space` | start (title) · next level (after LEVEL CLEAR) · title (after GAME OVER) |
 | `R` | restart the level |
 | `Esc` | back to the title · `Esc`/`Q` on the title closes the overlay |
 
@@ -30,11 +32,24 @@ lives/death, score, the classic 150 levels.
 | `game/level.js`     | `parse(text)` → structured level                         |
 | `game/engine.js`    | Pure rules: `createState(level)`, `tick(state, input)`   |
 | `game/levels.js`    | Ordered list of level files                              |
-| `levels/*.txt`      | ASCII levels — `#` brick `@` concrete `H` ladder `-` rope `$` gold `&` player `0` guard `S` exit |
+| `game/sprites.js`   | Runner / guard pixel-bitmap poses                        |
+| `levels/*.txt`      | ASCII levels — `#` brick `@` concrete `H` ladder `-` rope `X` false brick `$` gold `&` player `0` guard `S` hidden exit ladder |
 
-The engine (`game/*.js`) is plain JS with no QML dependency, so it runs headless.
-`scratchpad/enginetest.mjs` (in the session) scripts a full solve of each level
-as a regression check.
+The engine (`game/*.js`) is plain JS with no QML dependency, so it runs
+headless. Tests:
+
+```bash
+node test/mechanics.mjs   # dig / hole / guard unit checks
+node test/solve.mjs       # load + run all 150 levels, assert no crash
+node test/lint.mjs        # per-level structure + reachability lint
+```
+
+`test/lint.mjs` currently reports no structural failures and 8 levels with a
+piece of gold its (deliberately generous) movement flood can't trace a route
+to — `023 025 030 049 059 080 115 139`. These are the unmodified classic
+levels; the gold there needs a dig route the flood doesn't model. A real
+brute-force solver is a separate, much larger job (Lode Runner solving is
+PSPACE-hard).
 
 ## Install (dev)
 
