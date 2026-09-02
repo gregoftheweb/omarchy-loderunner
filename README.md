@@ -1,44 +1,49 @@
-# Lode Runner
+# *<u>Lode Runner</u>*
 
-A recreation of the classic 1983 platformer as an [Omarchy](https://omarchy.org)
+A recreation of the classic 1983 platformer as an [Omarchy](https://omarchy.org)  
 shell overlay plugin.
 
-**Status:** v0.3 — run, climb ladders, cross ropes, dig holes to trap the
-guards, collect all the gold to reveal the exit, climb out the top. Five
+**Status:** v0.3 — run, climb ladders, cross ropes, dig holes to trap the guards, collect all the gold to reveal the exit, climb out the top. Five  
 lives; a death resets the level. All 150 classic levels.
 
 A guard that falls into a hole coughs up any coin it was carrying onto the
 lip — dash across the top of the trapped guard and you can pinch it back.
 Guards always climb out, never drop into the same hole twice, and can grab
 the coin again on the way past. **Not yet:** score, sound, an authentic
-guard-AI algorithm, a level-select menu.
+guard-AI algorithm, a level-select menu.  
+
+[link](http://backbyrner.com)  
 
 ## Controls
 
-| Key | Action |
-|-----|--------|
-| `←` `→` / `A` `D` | run |
-| `↑` `↓` / `W` `S` | climb ladders / drop off ropes |
-| `Z` `X` | dig left / right |
-| `Space` | start (title) · next level (after LEVEL CLEAR) · title (after GAME OVER) |
-| `R` | restart the level |
-| `Esc` | back to the title · `Esc`/`Q` on the title closes the overlay |
+
+| Key               | Action                                                                   |
+| ----------------- | ------------------------------------------------------------------------ |
+| `←` `→` / `A` `D` | run                                                                      |
+| `↑` `↓` / `W` `S` | climb ladders / drop off ropes                                           |
+| `Z` `X`           | dig left / right                                                         |
+| `Space`           | start (title) · next level (after LEVEL CLEAR) · title (after GAME OVER) |
+| `R`               | restart the level                                                        |
+| `Esc`             | back to the title · `Esc`/`Q` on the title closes the overlay            |
+
 
 ## Layout
 
-| Path                | Purpose                                                  |
-|---------------------|---------------------------------------------------------|
-| `manifest.json`     | Omarchy plugin manifest (`kind: overlay`)                |
-| `LodeRunner.qml`    | Overlay window + cabinet chrome + key routing + screen SM |
-| `TitleScreen.qml`   | Title screen (visual only)                               |
-| `Playfield.qml`     | Renders a level, runs the loop, feeds input to the engine |
-| `PixelSprite.qml`   | ASCII-bitmap sprite (name avoids `QtQuick.Sprite`)       |
-| `game/tiles.js`     | Tile codes + the level charset                           |
-| `game/level.js`     | `parse(text)` → structured level                         |
-| `game/engine.js`    | Pure rules: `createState(level)`, `tick(state, input)`   |
-| `game/levels.js`    | Ordered list of level files                              |
-| `game/sprites.js`   | Runner / guard pixel-bitmap poses                        |
-| `levels/*.txt`      | ASCII levels — `#` brick `@` concrete `H` ladder `-` rope `X` false brick `$` gold `&` player `0` guard `S` hidden exit ladder |
+
+| Path              | Purpose                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `manifest.json`   | Omarchy plugin manifest (`kind: overlay`)                                                                                      |
+| `LodeRunner.qml`  | Overlay window + cabinet chrome + key routing + screen SM                                                                      |
+| `TitleScreen.qml` | Title screen (visual only)                                                                                                     |
+| `Playfield.qml`   | Renders a level, runs the loop, feeds input to the engine                                                                      |
+| `PixelSprite.qml` | ASCII-bitmap sprite (name avoids `QtQuick.Sprite`)                                                                             |
+| `game/tiles.js`   | Tile codes + the level charset                                                                                                 |
+| `game/level.js`   | `parse(text)` → structured level                                                                                               |
+| `game/engine.js`  | Pure rules: `createState(level)`, `tick(state, input)`                                                                         |
+| `game/levels.js`  | Ordered list of level files                                                                                                    |
+| `game/sprites.js` | Runner / guard pixel-bitmap poses                                                                                              |
+| `levels/*.txt`    | ASCII levels — `#` brick `@` concrete `H` ladder `-` rope `X` false brick `$` gold `&` player `0` guard `S` hidden exit ladder |
+
 
 The engine (`game/*.js`) is plain JS with no QML dependency, so it runs
 headless. Tests:
@@ -66,10 +71,10 @@ ln -s /path/to/loderunner ~/.config/omarchy/plugins/com.columbiafoundry.loderunn
 omarchy plugin enable com.columbiafoundry.loderunner
 ```
 
-This repo is developed at `~/Devplex/LodeRunner/loderunner` and symlinked into
-`~/.config/omarchy/plugins/`. Hot-reload of the QML across a symlinked plugin
-dir is unreliable — after editing, `omarchy restart shell` picks the change up
-cleanly (~3s).
+This repo is developed at `~/Devplex/LodeRunner/loderunner` and symlinked into  
+`~/.config/omarchy/plugins/`. Hot-reload of the QML across a symlinked plugin  
+dir is unreliable — after editing, `omarchy restart shell` picks the change up  
+cleanly (\~3s).
 
 ## Run
 
@@ -91,7 +96,9 @@ RUN
 `8` = disk drive, `1` = load to the address baked into the file. On cassette it
 was just `LOAD` then `RUN`, or **SHIFT + RUN/STOP** to do both at once.
 
-## License
+
+
+## license
 
 MIT — see [LICENSE](LICENSE). An unofficial fan recreation; not affiliated with
 the rights holders of the original *Lode Runner*.
