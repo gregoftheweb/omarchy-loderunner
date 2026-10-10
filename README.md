@@ -3,7 +3,7 @@
 A recreation of the classic 1983 platformer as an [Omarchy](https://omarchy.org)  
 shell overlay plugin.
 
-**Status:** v0.3 — run, climb ladders, cross ropes, dig holes to trap the guards, collect all the gold to reveal the exit, climb out the top. Five  
+**Status:** v0.8 — run, climb ladders, cross ropes, dig holes to trap the guards, collect all the gold to reveal the exit, climb out the top. Five  
 lives; a death resets the level. All 150 classic levels.
 
 A guard that falls into a hole coughs up any coin it was carrying onto the
@@ -71,18 +71,29 @@ ln -s /path/to/loderunner ~/.config/omarchy/plugins/com.columbiafoundry.loderunn
 omarchy plugin enable com.columbiafoundry.loderunner
 ```
 
-This repo is developed at `~/Devplex/LodeRunner/loderunner` and symlinked into  
-`~/.config/omarchy/plugins/`. Hot-reload of the QML across a symlinked plugin  
-dir is unreliable — after editing, `omarchy restart shell` picks the change up  
-cleanly (\~3s).
-
 ## Run
 
 ```bash
 omarchy-shell shell toggle com.columbiafoundry.loderunner
 ```
 
-Or the bound key: **SUPER + ALT + L** (defined in `~/.config/hypr/bindings.lua`).
+No shortcut key ships by default. Bind one yourself — either with Omaplug's
+keyboard-shortcut recorder (plugin **⋮** menu → **Keyboard shortcut**), or by
+adding a line to `~/.config/hypr/bindings.lua`:
+
+```lua
+o.bind("CTRL + ALT + L", "Lode Runner", "omarchy-shell shell toggle com.columbiafoundry.loderunner")
+```
+
+## Uninstall
+
+```bash
+omarchy plugin disable com.columbiafoundry.loderunner
+rm ~/.config/omarchy/plugins/com.columbiafoundry.loderunner   # or its symlink
+```
+
+Remove any keybinding you added for it from `~/.config/hypr/bindings.lua`
+(or via Omaplug's **Remove shortcut**).
 
 ## The C64 way
 
