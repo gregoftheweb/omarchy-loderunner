@@ -24,8 +24,10 @@ Item {
   property string levelText: ""
   property string monoFont: "monospace"
 
-  readonly property string pluginDir:
-    (manifest && manifest.__sourceDir) ? String(manifest.__sourceDir) : ""
+  // The shell strips manifest.__sourceDir for third-party plugins, so find
+  // our own install directory from this QML file's own URL instead of
+  // trusting the manifest.
+  readonly property string pluginDir: String(Qt.resolvedUrl(".")).replace(/^file:\/\//, "").replace(/\/$/, "")
   readonly property int levelCount: Levels.FILES.length
 
   function open(payloadJson) {
