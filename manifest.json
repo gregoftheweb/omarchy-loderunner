@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.columbiafoundry.loderunner",
   "name": "Lode Runner",
-  "version": "0.3.0",
+  "version": "0.8.0",
   "author": "gonzo",
   "description": "A recreation of the classic Lode Runner — run, climb, dig, dodge the guards, collect the gold, climb out. All 150 classic levels.",
   "keepLoaded": true,

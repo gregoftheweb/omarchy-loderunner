@@ -169,7 +169,7 @@ Item {
       }
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "Recreation — gonzo · v" + ((title.manifest && title.manifest.version) || "0.3.0")
+        text: "Recreation — gonzo · v" + ((title.manifest && title.manifest.version) || "0.8.0")
         color: "#7b7b7b"
         font.family: title.monoFont
         font.pixelSize: title.height * 0.03
